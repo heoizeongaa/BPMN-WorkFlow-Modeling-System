@@ -58,23 +58,23 @@ export function DslPanel() {
         handleGenerate();
       }
     },
-    [handleGenerate]
+    [handleGenerate],
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#fff' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--background--surface)' }}>
       <div
         style={{
           padding: '10px 16px',
-          borderBottom: '1px solid #f0f0f0',
+          borderBottom: '1px solid var(--border-color)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
       >
         <div>
-          <h3 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>DSL Input</h3>
-          <p style={{ margin: '2px 0 0', fontSize: 10, color: '#bfbfbf' }}>Ctrl+Enter to generate</p>
+          <h3 style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--text-color)' }}>DSL Input</h3>
+          <p style={{ margin: '2px 0 0', fontSize: 10, color: 'var(--text-color--disabled)' }}>Ctrl+Enter to generate</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <button
@@ -83,12 +83,12 @@ export function DslPanel() {
               padding: '2px 8px',
               fontSize: 10,
               fontWeight: 500,
-              color: showRawInput ? '#1890ff' : '#8c8c8c',
-              background: showRawInput ? '#e6f7ff' : '#fafafa',
-              border: `1px solid ${showRawInput ? '#91d5ff' : '#e8e8e8'}`,
-              borderRadius: 4,
+              color: showRawInput ? 'var(--color--blue-600)' : 'var(--text-color--subtler)',
+              background: showRawInput ? 'var(--color--blue-50)' : 'var(--background--subtle)',
+              border: `1px solid ${showRawInput ? 'var(--color--blue-200)' : 'var(--border-color)'}`,
+              borderRadius: 'var(--radius--3xs)',
               cursor: 'pointer',
-              transition: 'all 0.2s',
+              transition: 'all var(--duration--snappy)',
               whiteSpace: 'nowrap',
             }}
           >
@@ -99,7 +99,7 @@ export function DslPanel() {
               width: 6,
               height: 6,
               borderRadius: '50%',
-              background: isLayouting ? '#faad14' : '#52c41a',
+              background: isLayouting ? 'var(--color--yellow-400)' : 'var(--color--green-500)',
             }}
           />
         </div>
@@ -108,25 +108,18 @@ export function DslPanel() {
       {showRawInput && (
         <div
           style={{
-            borderBottom: '1px solid #f0f0f0',
+            borderBottom: '1px solid var(--border-color)',
             display: 'flex',
             flexDirection: 'column',
             maxHeight: '40%',
-            background: '#fffbf0',
+            background: 'var(--color--yellow-50)',
           }}
         >
-          <div
-            style={{
-              padding: '6px 12px 2px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <span style={{ fontSize: 10, color: '#d48806', fontWeight: 600, letterSpacing: '0.3px' }}>
+          <div style={{ padding: '6px 12px 2px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 10, color: 'var(--color--orange-600)', fontWeight: 600, letterSpacing: '0.3px' }}>
               RAW BUSINESS TEXT
             </span>
-            <span style={{ fontSize: 9, color: '#d9d9d9' }}>paste workflow description</span>
+            <span style={{ fontSize: 9, color: 'var(--text-color--disabled)' }}>paste workflow description</span>
           </div>
           <div style={{ flex: 1, padding: '0 12px 4px', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
             <textarea
@@ -140,20 +133,20 @@ export function DslPanel() {
                 maxHeight: 120,
                 padding: 6,
                 fontSize: 11,
-                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                fontFamily: 'inherit',
                 lineHeight: 1.6,
-                border: '1px solid #ffe58f',
-                borderRadius: 4,
+                border: '1px solid var(--color--yellow-200)',
+                borderRadius: 'var(--radius--3xs)',
                 resize: 'none',
                 outline: 'none',
-                background: '#fffbe6',
-                color: '#333',
+                background: 'var(--color--yellow-50)',
+                color: 'var(--text-color)',
                 boxSizing: 'border-box',
-                transition: 'border-color 0.2s',
+                transition: 'border-color var(--duration--snappy)',
               }}
-              placeholder={'Paste raw workflow text here...\ne.g.:\n销售审批流程\n空调(数管部)\n销司：发起人 -> 数据中心主管 -> END\n总部：发起人 -> 数据中心主管 -> 总经理 -> END'}
-              onFocus={e => (e.target.style.borderColor = '#ffc53d')}
-              onBlur={e => (e.target.style.borderColor = '#ffe58f')}
+              placeholder={'Paste raw workflow text here...\ne.g.:\n销售审批流程\n空调(数管部)\n销司：发起人 -> 数据中心主管 -> END'}
+              onFocus={e => (e.target.style.borderColor = 'var(--color--yellow-400)')}
+              onBlur={e => (e.target.style.borderColor = 'var(--color--yellow-200)')}
             />
           </div>
           <div style={{ padding: '4px 12px 8px' }}>
@@ -167,12 +160,12 @@ export function DslPanel() {
                 fontWeight: 600,
                 color: '#fff',
                 background: rawText.trim()
-                  ? 'linear-gradient(135deg, #faad14, #d48806)'
-                  : '#d9d9d9',
+                  ? 'linear-gradient(135deg, var(--color--orange-500), var(--color--orange-600))'
+                  : 'var(--color--neutral-300)',
                 border: 'none',
-                borderRadius: 4,
+                borderRadius: 'var(--radius--3xs)',
                 cursor: rawText.trim() ? 'pointer' : 'not-allowed',
-                transition: 'all 0.2s',
+                transition: 'all var(--duration--snappy)',
                 letterSpacing: '0.3px',
               }}
             >
@@ -191,15 +184,16 @@ export function DslPanel() {
             width: '100%',
             padding: '5px 8px',
             fontSize: 12,
-            border: '1px solid #e8e8e8',
-            borderRadius: 4,
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius--3xs)',
             outline: 'none',
             boxSizing: 'border-box',
-            color: '#333',
-            transition: 'border-color 0.2s',
+            color: 'var(--text-color)',
+            background: 'var(--background--surface)',
+            transition: 'border-color var(--duration--snappy)',
           }}
-          onFocus={e => (e.target.style.borderColor = '#1890ff')}
-          onBlur={e => (e.target.style.borderColor = '#e8e8e8')}
+          onFocus={e => (e.target.style.borderColor = 'var(--color--blue-500)')}
+          onBlur={e => (e.target.style.borderColor = 'var(--border-color)')}
         />
       </div>
 
@@ -216,23 +210,23 @@ export function DslPanel() {
             fontSize: 12,
             fontFamily: '"Cascadia Code", Consolas, Monaco, "Courier New", monospace',
             lineHeight: 1.7,
-            border: '1px solid #e8e8e8',
-            borderRadius: 4,
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius--3xs)',
             resize: 'none',
             outline: 'none',
-            background: '#fafafa',
-            color: '#333',
+            background: 'var(--background--subtle)',
+            color: 'var(--text-color)',
             boxSizing: 'border-box',
-            transition: 'border-color 0.2s, background 0.2s',
+            transition: 'border-color var(--duration--snappy), background var(--duration--snappy)',
           }}
           placeholder="Enter DSL here..."
           onFocus={e => {
-            e.target.style.borderColor = '#1890ff';
-            e.target.style.background = '#fff';
+            e.target.style.borderColor = 'var(--color--blue-500)';
+            e.target.style.background = 'var(--background--surface)';
           }}
           onBlur={e => {
-            e.target.style.borderColor = '#e8e8e8';
-            e.target.style.background = '#fafafa';
+            e.target.style.borderColor = 'var(--border-color)';
+            e.target.style.background = 'var(--background--subtle)';
           }}
         />
       </div>
@@ -248,12 +242,12 @@ export function DslPanel() {
             fontWeight: 600,
             color: '#fff',
             background: isLayouting
-              ? '#91d5ff'
-              : 'linear-gradient(135deg, #1890ff, #096dd9)',
+              ? 'var(--color--blue-300)'
+              : 'linear-gradient(135deg, var(--color--blue-600), var(--color--blue-700))',
             border: 'none',
-            borderRadius: 6,
+            borderRadius: 'var(--radius--2xs)',
             cursor: isLayouting ? 'not-allowed' : 'pointer',
-            transition: 'all 0.2s',
+            transition: 'all var(--duration--snappy)',
             letterSpacing: '0.3px',
           }}
         >

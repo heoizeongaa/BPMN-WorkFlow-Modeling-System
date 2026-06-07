@@ -3,10 +3,14 @@ import { applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
 import type { NodeChange, EdgeChange, Node, Edge, Connection } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 import type { BpmnNodeData, BpmnEdgeData, ConditionItem } from '@/types/bpmn';
+import type { AiConfig, AiMessage, AiParseStatus } from '@/types/ai';
 import { parseDsl, dslToFlow } from '@/utils/dslParser';
 import { applyInferenceRules } from '@/utils/inferenceEngine';
 import { parsedFlowToReactFlow } from '@/utils/flowConverter';
 import { layoutWithElk } from '@/utils/layoutEngine';
+import { parseWithAi } from '@/services/aiParser';
+import { structuredFlowWithConditions } from '@/utils/structuredFlowConverter';
+import { loadAiConfig } from '@/services/aiConfig';
 
 interface BpmnStore {
   nodes: Node<BpmnNodeData>[];
@@ -15,6 +19,12 @@ interface BpmnStore {
   processName: string;
   conditions: ConditionItem[];
   isLayouting: boolean;
+
+  // AI 状态
+  aiConfig: AiConfig | null;
+  aiStatus: AiParseStatus;
+  aiMessages: AiMessage[];
+  aiError: string | null;
 
   setDslText: (text: string) => void;
   setProcessName: (name: string) => void;
@@ -28,15 +38,25 @@ interface BpmnStore {
   removeCondition: (id: string) => void;
   assignConditionToEdge: (edgeId: string, conditionId: string) => void;
   relayout: () => Promise<void>;
+
+  // AI actions
+  setAiConfig: (config: AiConfig | null) => void;
+  parseWithAiAction: (userInput: string) => Promise<void>;
+  clearAiMessages: () => void;
 }
 
 const NODE_DIMENSIONS: Record<string, { width: number; height: number }> = {
   startEvent: { width: 40, height: 40 },
   endEvent: { width: 40, height: 40 },
   userTask: { width: 160, height: 60 },
+  serviceTask: { width: 160, height: 60 },
+  scriptTask: { width: 160, height: 60 },
+  sendTask: { width: 160, height: 60 },
+  receiveTask: { width: 160, height: 60 },
   exclusiveGateway: { width: 50, height: 50 },
   parallelGateway: { width: 50, height: 50 },
   inclusiveGateway: { width: 50, height: 50 },
+  subProcess: { width: 200, height: 120 },
 };
 
 export const useBpmnStore = create<BpmnStore>((set, get) => ({
@@ -46,6 +66,12 @@ export const useBpmnStore = create<BpmnStore>((set, get) => ({
   processName: 'Process_1',
   conditions: [],
   isLayouting: false,
+
+  // AI 初始状态
+  aiConfig: loadAiConfig(),
+  aiStatus: 'idle' as AiParseStatus,
+  aiMessages: [],
+  aiError: null,
 
   setDslText: (text) => set({ dslText: text }),
   setProcessName: (name) => set({ processName: name }),
@@ -142,5 +168,101 @@ export const useBpmnStore = create<BpmnStore>((set, get) => ({
     } catch {
       set({ isLayouting: false });
     }
+  },
+
+  setAiConfig: (config) => {
+    set({ aiConfig: config });
+  },
+
+  parseWithAiAction: async (userInput: string) => {
+    const { aiConfig, nodes, edges, processName } = get();
+    if (!aiConfig) {
+      set({ aiError: '请先配置 AI API Key', aiStatus: 'error' });
+      return;
+    }
+    if (!userInput.trim()) return;
+
+    // 构造已有流程上下文
+    const existingFlow = nodes.length > 0
+      ? JSON.stringify({
+          processName,
+          nodes: nodes.map(n => ({ id: n.id, type: n.data.type, label: n.data.label })),
+          edges: edges.map(e => ({ source: e.source, target: e.target })),
+        })
+      : undefined;
+
+    const userMsg: AiMessage = { role: 'user', content: userInput, timestamp: Date.now() };
+    set(state => ({
+      aiStatus: 'parsing',
+      aiError: null,
+      aiMessages: [...state.aiMessages, userMsg],
+    }));
+
+    const result = await parseWithAi(aiConfig, userInput, existingFlow);
+
+    if (result.error || !result.flow) {
+      const assistantMsg: AiMessage = {
+        role: 'assistant',
+        content: result.error || '解析失败',
+        timestamp: Date.now(),
+      };
+      set(state => ({
+        aiStatus: 'error',
+        aiError: result.error || '解析失败',
+        aiMessages: [...state.aiMessages, assistantMsg],
+      }));
+      return;
+    }
+
+    // 转换并渲染
+    const { parsedFlow, conditionMap } = structuredFlowWithConditions(result.flow);
+    let flow = applyInferenceRules(parsedFlow);
+    const { nodes: rfNodes, edges: rfEdges } = parsedFlowToReactFlow(flow);
+
+    // 附加条件信息
+    const edgesWithConditions = rfEdges.map(e => {
+      const key = `${e.source}->${e.target}`;
+      const cond = conditionMap.get(key);
+      if (cond) {
+        return { ...e, data: { ...e.data, conditionName: cond, conditionExpression: cond } };
+      }
+      return e;
+    });
+
+    set({ isLayouting: true });
+    try {
+      const layouted = await layoutWithElk(rfNodes, edgesWithConditions);
+      const assistantMsg: AiMessage = {
+        role: 'assistant',
+        content: `✅ 已生成 ${result.flow.processName}：${result.flow.nodes.length} 个节点，${result.flow.edges.length} 条连线`,
+        timestamp: Date.now(),
+      };
+      set(state => ({
+        nodes: layouted.nodes,
+        edges: layouted.edges,
+        processName: result.flow!.processName,
+        isLayouting: false,
+        aiStatus: 'success',
+        aiMessages: [...state.aiMessages, assistantMsg],
+      }));
+    } catch {
+      const assistantMsg: AiMessage = {
+        role: 'assistant',
+        content: `⚠️ 流程已解析但布局失败`,
+        timestamp: Date.now(),
+      };
+      set(state => ({
+        nodes: rfNodes,
+        edges: edgesWithConditions,
+        processName: result.flow!.processName,
+        isLayouting: false,
+        aiStatus: 'success',
+        aiMessages: [...state.aiMessages, assistantMsg],
+      }));
+    }
+  },
+
+  clearAiMessages: () => {
+    set({ aiMessages: [], aiError: null, aiStatus: 'idle' });
   },
 }));

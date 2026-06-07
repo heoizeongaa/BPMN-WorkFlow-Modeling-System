@@ -1,6 +1,23 @@
 import type { Node, Edge } from '@xyflow/react';
 import type { BpmnNodeData, BpmnEdgeData } from '@/types/bpmn';
 
+function getNodeDimensions(type: string): { width: number; height: number } {
+  const map: Record<string, { width: number; height: number }> = {
+    startEvent: { width: 40, height: 40 },
+    endEvent: { width: 40, height: 40 },
+    userTask: { width: 160, height: 60 },
+    serviceTask: { width: 160, height: 60 },
+    scriptTask: { width: 160, height: 60 },
+    sendTask: { width: 160, height: 60 },
+    receiveTask: { width: 160, height: 60 },
+    exclusiveGateway: { width: 50, height: 50 },
+    parallelGateway: { width: 50, height: 50 },
+    inclusiveGateway: { width: 50, height: 50 },
+    subProcess: { width: 200, height: 120 },
+  };
+  return map[type] || { width: 160, height: 60 };
+}
+
 function escapeXml(str: string): string {
   return str
     .replace(/&/g, '&amp;')
@@ -15,9 +32,14 @@ function getBpmnElementType(type: string): string {
     case 'startEvent': return 'startEvent';
     case 'endEvent': return 'endEvent';
     case 'userTask': return 'userTask';
+    case 'serviceTask': return 'serviceTask';
+    case 'scriptTask': return 'scriptTask';
+    case 'sendTask': return 'sendTask';
+    case 'receiveTask': return 'receiveTask';
     case 'exclusiveGateway': return 'exclusiveGateway';
     case 'parallelGateway': return 'parallelGateway';
     case 'inclusiveGateway': return 'inclusiveGateway';
+    case 'subProcess': return 'subProcess';
     default: return 'userTask';
   }
 }
@@ -27,9 +49,14 @@ function getShapeSymbol(type: string): string {
     case 'startEvent': return 'bpmn:start-event';
     case 'endEvent': return 'bpmn:end-event';
     case 'userTask': return 'bpmn:user-task';
+    case 'serviceTask': return 'bpmn:service-task';
+    case 'scriptTask': return 'bpmn:script-task';
+    case 'sendTask': return 'bpmn:send-task';
+    case 'receiveTask': return 'bpmn:receive-task';
     case 'exclusiveGateway': return 'bpmn:exclusive-gateway';
     case 'parallelGateway': return 'bpmn:parallel-gateway';
     case 'inclusiveGateway': return 'bpmn:inclusive-gateway';
+    case 'subProcess': return 'bpmn:sub-process';
     default: return 'bpmn:user-task';
   }
 }
@@ -90,8 +117,9 @@ export function exportToBpmnXml(
   xml += `    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="${escapeXml(collaborationId)}">\n`;
 
   for (const node of nodes) {
-    const width = node.style?.width || (node.data.type === 'userTask' ? 160 : node.data.type.includes('Gateway') ? 50 : 40);
-    const height = node.style?.height || (node.data.type === 'userTask' ? 60 : node.data.type.includes('Gateway') ? 50 : 40);
+    const dims = getNodeDimensions(node.data.type);
+    const width = node.style?.width || dims.width;
+    const height = node.style?.height || dims.height;
     const x = node.position.x;
     const y = node.position.y;
 
@@ -107,10 +135,12 @@ export function exportToBpmnXml(
     xml += `      <bpmndi:BPMNEdge id="${escapeXml(edge.id)}_di" bpmnElement="${escapeXml(edge.id)}">\n`;
 
     if (sourceNode && targetNode) {
-      const srcW = sourceNode.style?.width || (sourceNode.data.type === 'userTask' ? 160 : sourceNode.data.type.includes('Gateway') ? 50 : 40);
-      const srcH = sourceNode.style?.height || (sourceNode.data.type === 'userTask' ? 60 : sourceNode.data.type.includes('Gateway') ? 50 : 40);
-      const tgtW = targetNode.style?.width || (targetNode.data.type === 'userTask' ? 160 : targetNode.data.type.includes('Gateway') ? 50 : 40);
-      const tgtH = targetNode.style?.height || (targetNode.data.type === 'userTask' ? 60 : targetNode.data.type.includes('Gateway') ? 50 : 40);
+      const srcDims = getNodeDimensions(sourceNode.data.type);
+      const tgtDims = getNodeDimensions(targetNode.data.type);
+      const srcW = sourceNode.style?.width || srcDims.width;
+      const srcH = sourceNode.style?.height || srcDims.height;
+      const tgtW = targetNode.style?.width || tgtDims.width;
+      const tgtH = targetNode.style?.height || tgtDims.height;
 
       const sx = sourceNode.position.x + (srcW as number);
       const sy = sourceNode.position.y + (srcH as number) / 2;

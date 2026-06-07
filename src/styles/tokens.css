@@ -1,0 +1,249 @@
+/* ============================================================
+   Design Token System
+   Based on n8n's OKLCH color system with CSS fallbacks
+   ============================================================ */
+
+/* ---- @property declarations for animations ---- */
+@property --node--gradient-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ============================================================
+   Light Theme (default)
+   ============================================================ */
+:root {
+  color-scheme: light;
+
+  /* ---- Primitives: Neutral ---- */
+  --color--neutral-white: #ffffff;
+  --color--neutral-50: #fafafa;
+  --color--neutral-100: #f5f5f5;
+  --color--neutral-125: #f0f0f0;   /* n8n canvas background */
+  --color--neutral-150: #ebebeb;
+  --color--neutral-200: #e0e0e0;
+  --color--neutral-250: #d6d6d6;
+  --color--neutral-300: #c8c8c8;
+  --color--neutral-400: #a0a0a0;
+  --color--neutral-500: #808080;
+  --color--neutral-600: #5c5c5c;
+  --color--neutral-700: #3d3d3d;
+  --color--neutral-750: #333333;
+  --color--neutral-800: #2a2a2a;
+  --color--neutral-850: #1f1f1f;
+  --color--neutral-900: #1a1a1a;
+  --color--neutral-950: #111111;
+  --color--neutral-black: #000000;
+
+  /* ---- Primitives: Orange (Brand) ---- */
+  --color--orange-50: #fff8f0;
+  --color--orange-100: #fff0dd;
+  --color--orange-200: #ffe0bb;
+  --color--orange-300: #ffc888;
+  --color--orange-400: #ffa852;
+  --color--orange-500: #ff6b2c;
+  --color--orange-600: #e55a1b;
+  --color--orange-700: #c44a10;
+
+  /* ---- Primitives: Green (Success) ---- */
+  --color--green-50: #f0fdf4;
+  --color--green-100: #dcfce7;
+  --color--green-200: #bbf7d0;
+  --color--green-300: #86efac;
+  --color--green-400: #4ade80;
+  --color--green-500: #22c55e;
+  --color--green-600: #16a34a;
+  --color--green-700: #15803d;
+  --color--green-800: #166534;
+
+  /* ---- Primitives: Red (Danger) ---- */
+  --color--red-50: #fff1f0;
+  --color--red-100: #ffe0dd;
+  --color--red-200: #ffc1ba;
+  --color--red-300: #ff9a8e;
+  --color--red-400: #ff6b5a;
+  --color--red-500: #ef4444;
+  --color--red-600: #dc2626;
+  --color--red-700: #b91c1c;
+
+  /* ---- Primitives: Blue (Info) ---- */
+  --color--blue-50: #eff6ff;
+  --color--blue-100: #dbeafe;
+  --color--blue-200: #bfdbfe;
+  --color--blue-300: #93c5fd;
+  --color--blue-400: #60a5fa;
+  --color--blue-500: #3b82f6;
+  --color--blue-600: #2563eb;
+  --color--blue-700: #1d4ed8;
+
+  /* ---- Primitives: Purple (Secondary) ---- */
+  --color--purple-50: #faf5ff;
+  --color--purple-100: #f3e8ff;
+  --color--purple-200: #e9d5ff;
+  --color--purple-300: #d8b4fe;
+  --color--purple-400: #a78bfa;
+  --color--purple-500: #8b5cf6;
+  --color--purple-600: #7c3aed;
+
+  /* ---- Primitives: Yellow (Warning) ---- */
+  --color--yellow-50: #fefce8;
+  --color--yellow-100: #fef9c3;
+  --color--yellow-200: #fef08a;
+  --color--yellow-300: #fde047;
+  --color--yellow-400: #facc15;
+
+  /* ---- Primitives: Alpha ---- */
+  --color--black-alpha-50: rgba(0, 0, 0, 0.05);
+  --color--black-alpha-100: rgba(0, 0, 0, 0.1);
+  --color--black-alpha-150: rgba(0, 0, 0, 0.15);
+  --color--black-alpha-200: rgba(0, 0, 0, 0.2);
+  --color--black-alpha-250: rgba(0, 0, 0, 0.25);
+  --color--black-alpha-300: rgba(0, 0, 0, 0.3);
+  --color--white-alpha-100: rgba(255, 255, 255, 0.1);
+  --color--white-alpha-150: rgba(255, 255, 255, 0.15);
+  --color--white-alpha-200: rgba(255, 255, 255, 0.2);
+  --color--white-alpha-400: rgba(255, 255, 255, 0.4);
+  --color--white-alpha-800: rgba(255, 255, 255, 0.8);
+
+  /* ---- Semantic: Background ---- */
+  --background--surface: var(--color--neutral-white);
+  --background--subtle: var(--color--neutral-50);
+  --background--hover: var(--color--black-alpha-50);
+
+  /* ---- Semantic: Border ---- */
+  --border-color: var(--color--black-alpha-100);
+  --border-color--subtle: var(--color--black-alpha-50);
+  --border-color--strong: var(--color--black-alpha-200);
+
+  /* ---- Semantic: Text ---- */
+  --text-color: var(--color--neutral-900);
+  --text-color--subtle: var(--color--neutral-700);
+  --text-color--subtler: var(--color--neutral-500);
+  --text-color--disabled: var(--color--neutral-400);
+
+  /* ---- Semantic: Status ---- */
+  --color--success: var(--color--green-500);
+  --color--danger: var(--color--red-500);
+  --color--warning: var(--color--yellow-400);
+  --color--primary: var(--color--orange-500);
+
+  /* ---- Canvas ---- */
+  --canvas--color--background: var(--color--neutral-125);
+  --canvas--dot--color: var(--color--neutral-300);
+  --canvas--color--selected: rgba(59, 130, 246, 0.1);
+  --canvas--label--color: var(--color--neutral-600);
+
+  /* ---- Node ---- */
+  --node--color--background: var(--color--neutral-white);
+  --node--border-width: 1.5px;
+  --node--border-color: var(--color--black-alpha-100);
+  --node--border-radius: 12px;
+  --node--shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --node--shadow--selected: 0 0 0 6px var(--canvas--color--selected);
+  --node--border-color--success: var(--color--success);
+  --node--border-color--error: var(--color--danger);
+  --node--border-color--running: var(--color--primary);
+
+  /* ---- Spacing ---- */
+  --spacing--5xs: 2px;
+  --spacing--4xs: 4px;
+  --spacing--3xs: 6px;
+  --spacing--2xs: 8px;
+  --spacing--xs: 12px;
+  --spacing--sm: 16px;
+  --spacing--md: 20px;
+  --spacing--lg: 24px;
+  --spacing--xl: 32px;
+
+  /* ---- Typography ---- */
+  --font-size--3xs: 10px;
+  --font-size--2xs: 11px;
+  --font-size--xs: 12px;
+  --font-size--sm: 13px;
+  --font-size--md: 14px;
+  --font-size--lg: 16px;
+  --font-weight--regular: 400;
+  --font-weight--medium: 500;
+  --font-weight--bold: 600;
+  --line-height--xs: 1;
+  --line-height--sm: 1.25;
+  --line-height--md: 1.3;
+  --line-height--lg: 1.5;
+
+  /* ---- Radius ---- */
+  --radius--3xs: 4px;
+  --radius--2xs: 6px;
+  --radius--xs: 8px;
+  --radius--sm: 12px;
+  --radius--md: 16px;
+  --radius--lg: 20px;
+  --radius--full: 9999px;
+
+  /* ---- Shadow ---- */
+  --shadow--xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow--sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow--md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow--lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+
+  /* ---- Transition ---- */
+  --duration--snappy: 150ms;
+  --duration--base: 300ms;
+  --duration--slow: 500ms;
+  --easing--ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --easing--ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+
+  /* ---- BPMN Node Colors ---- */
+  --bpmn--start--color: var(--color--green-500);
+  --bpmn--start--bg: var(--color--green-50);
+  --bpmn--end--color: var(--color--red-500);
+  --bpmn--end--bg: var(--color--red-50);
+  --bpmn--task--color: var(--color--blue-500);
+  --bpmn--task--bg: var(--color--blue-50);
+  --bpmn--service--color: var(--color--blue-600);
+  --bpmn--script--color: var(--color--purple-500);
+  --bpmn--send--color: var(--color--orange-500);
+  --bpmn--receive--color: var(--color--blue-400);
+  --bpmn--exclusive--color: var(--color--yellow-400);
+  --bpmn--exclusive--bg: var(--color--yellow-50);
+  --bpmn--parallel--color: var(--color--blue-600);
+  --bpmn--parallel--bg: var(--color--blue-50);
+  --bpmn--inclusive--color: var(--color--green-500);
+  --bpmn--subprocess--color: var(--color--purple-400);
+  --bpmn--edge--color: var(--color--neutral-500);
+  --bpmn--edge--selected: var(--color--blue-500);
+  --bpmn--edge--reject: var(--color--red-400);
+  --bpmn--handle--color: var(--color--neutral-400);
+}
+
+/* ============================================================
+   Dark Theme
+   ============================================================ */
+[data-theme='dark'] {
+  --background--surface: var(--color--neutral-900);
+  --background--subtle: var(--color--neutral-850);
+  --background--hover: var(--color--white-alpha-100);
+
+  --border-color: var(--color--white-alpha-100);
+  --border-color--subtle: var(--color--white-alpha-50);
+  --border-color--strong: var(--color--white-alpha-200);
+
+  --text-color: var(--color--neutral-white);
+  --text-color--subtle: var(--color--neutral-200);
+  --text-color--subtler: var(--color--neutral-400);
+  --text-color--disabled: var(--color--neutral-600);
+
+  --canvas--color--background: var(--color--neutral-950);
+  --canvas--dot--color: var(--color--neutral-700);
+  --canvas--color--selected: rgba(96, 165, 250, 0.15);
+
+  --node--color--background: var(--color--neutral-850);
+  --node--border-color: var(--color--white-alpha-150);
+  --node--shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  --bpmn--start--bg: rgba(34, 197, 94, 0.15);
+  --bpmn--end--bg: rgba(239, 68, 68, 0.15);
+  --bpmn--task--bg: rgba(59, 130, 246, 0.15);
+  --bpmn--exclusive--bg: rgba(250, 204, 21, 0.15);
+  --bpmn--parallel--bg: rgba(37, 99, 235, 0.15);
+}

@@ -1,4 +1,15 @@
-export type BpmnNodeType = 'startEvent' | 'endEvent' | 'userTask' | 'exclusiveGateway' | 'parallelGateway' | 'inclusiveGateway';
+export type BpmnNodeType =
+  | 'startEvent'
+  | 'endEvent'
+  | 'userTask'
+  | 'serviceTask'
+  | 'scriptTask'
+  | 'sendTask'
+  | 'receiveTask'
+  | 'exclusiveGateway'
+  | 'parallelGateway'
+  | 'inclusiveGateway'
+  | 'subProcess';
 
 export interface BpmnNodeData {
   label: string;

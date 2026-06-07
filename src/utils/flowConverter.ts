@@ -6,9 +6,14 @@ const NODE_DIMENSIONS: Record<string, { width: number; height: number }> = {
   startEvent: { width: 40, height: 40 },
   endEvent: { width: 40, height: 40 },
   userTask: { width: 160, height: 60 },
+  serviceTask: { width: 160, height: 60 },
+  scriptTask: { width: 160, height: 60 },
+  sendTask: { width: 160, height: 60 },
+  receiveTask: { width: 160, height: 60 },
   exclusiveGateway: { width: 50, height: 50 },
   parallelGateway: { width: 50, height: 50 },
   inclusiveGateway: { width: 50, height: 50 },
+  subProcess: { width: 200, height: 120 },
 };
 
 export function parsedFlowToReactFlow(flow: ParsedFlow): {

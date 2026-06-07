@@ -1,8 +1,19 @@
 import { useBpmnStore } from '@/store/bpmnStore';
 import { exportToBpmnXml } from '@/utils/bpmnExporter';
+import { useState, useEffect } from 'react';
 
 export function Toolbar() {
   const { nodes, edges, processName, relayout, isLayouting, addNode } = useBpmnStore();
+
+  // 暗色模式状态
+  const [isDark, setIsDark] = useState(() => {
+    return document.body.getAttribute('data-theme') === 'dark';
+  });
+
+  useEffect(() => {
+    document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('bpmn-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   const handleExport = () => {
     const xml = exportToBpmnXml(nodes, edges, processName);
@@ -22,25 +33,25 @@ export function Toolbar() {
 
   const handleAddGateway = () => {
     const maxX = nodes.reduce((max, n) => Math.max(max, n.position.x + 200), 100);
-    addNode('exclusiveGateway', '×', { x: maxX, y: 100 });
+    addNode('exclusiveGateway', '', { x: maxX, y: 100 });
   };
 
   const handleAddParallelGateway = () => {
     const maxX = nodes.reduce((max, n) => Math.max(max, n.position.x + 200), 100);
-    addNode('parallelGateway', '+', { x: maxX, y: 100 });
+    addNode('parallelGateway', '', { x: maxX, y: 100 });
   };
 
   return (
     <div
       style={{
         height: 48,
-        background: '#fff',
-        borderBottom: '1px solid #e8e8e8',
+        background: 'var(--background--surface)',
+        borderBottom: '1px solid var(--border-color)',
         display: 'flex',
         alignItems: 'center',
-        padding: '0 16px',
+        padding: '0 var(--spacing--sm)',
         gap: 6,
-        boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+        boxShadow: 'var(--shadow--xs)',
         zIndex: 10,
       }}
     >
@@ -49,8 +60,8 @@ export function Toolbar() {
           style={{
             width: 28,
             height: 28,
-            borderRadius: 6,
-            background: 'linear-gradient(135deg, #1890ff, #096dd9)',
+            borderRadius: 'var(--radius--2xs)',
+            background: 'linear-gradient(135deg, var(--color--blue-600), var(--color--blue-700))',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -61,7 +72,7 @@ export function Toolbar() {
         >
           B
         </div>
-        <span style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.3px' }}>
+        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-color)', letterSpacing: '-0.3px' }}>
           BPMN Modeler
         </span>
       </div>
@@ -86,7 +97,7 @@ export function Toolbar() {
 
       <div style={{ flex: 1 }} />
 
-      <div style={{ fontSize: 11, color: '#999', marginRight: 8 }}>
+      <div style={{ fontSize: 11, color: 'var(--text-color--subtler)', marginRight: 8 }}>
         {nodes.length} nodes · {edges.length} edges
       </div>
 
@@ -97,24 +108,45 @@ export function Toolbar() {
           fontSize: 12,
           fontWeight: 600,
           color: '#fff',
-          background: 'linear-gradient(135deg, #1890ff, #096dd9)',
+          background: 'linear-gradient(135deg, var(--color--blue-600), var(--color--blue-700))',
           border: 'none',
-          borderRadius: 6,
+          borderRadius: 'var(--radius--2xs)',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           gap: 4,
-          transition: 'opacity 0.2s',
+          transition: 'opacity var(--duration--snappy) var(--easing--ease-out)',
         }}
       >
         Export BPMN XML
+      </button>
+
+      <button
+        onClick={() => setIsDark(!isDark)}
+        title={isDark ? '切换亮色模式' : '切换暗色模式'}
+        style={{
+          width: 32,
+          height: 32,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 16,
+          background: 'transparent',
+          border: '1px solid var(--border-color)',
+          borderRadius: 'var(--radius--3xs)',
+          cursor: 'pointer',
+          transition: 'all var(--duration--snappy)',
+          marginLeft: 4,
+        }}
+      >
+        {isDark ? '☀️' : '🌙'}
       </button>
     </div>
   );
 }
 
 function ToolbarDivider() {
-  return <div style={{ width: 1, height: 22, background: '#e8e8e8', margin: '0 4px' }} />;
+  return <div style={{ width: 1, height: 22, background: 'var(--border-color)', margin: '0 4px' }} />;
 }
 
 function ToolbarButton({
@@ -136,15 +168,15 @@ function ToolbarButton({
         padding: '4px 10px',
         fontSize: 12,
         fontWeight: 500,
-        color: disabled ? '#bfbfbf' : '#595959',
-        background: disabled ? '#fafafa' : '#fff',
-        border: `1px solid ${disabled ? '#f0f0f0' : '#d9d9d9'}`,
-        borderRadius: 4,
+        color: disabled ? 'var(--text-color--disabled)' : 'var(--text-color--subtle)',
+        background: disabled ? 'var(--background--subtle)' : 'var(--background--surface)',
+        border: `1px solid ${disabled ? 'var(--border-color--subtle)' : 'var(--border-color)'}`,
+        borderRadius: 'var(--radius--3xs)',
         cursor: disabled ? 'not-allowed' : 'pointer',
         display: 'flex',
         alignItems: 'center',
         gap: 4,
-        transition: 'all 0.2s',
+        transition: 'all var(--duration--snappy) var(--easing--ease-out)',
       }}
     >
       {icon && <span style={{ fontSize: 13 }}>{icon}</span>}

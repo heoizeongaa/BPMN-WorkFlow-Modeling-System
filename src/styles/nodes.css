@@ -1,0 +1,224 @@
+/* ============================================================
+   Node Component Styles — n8n-inspired design language
+   ============================================================ */
+
+/* ---- Common Node Base ---- */
+.bpmn-node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--node--color--background);
+  border: var(--node--border-width) solid
+    oklch(0% 0 0 / var(--canvas-node--border--opacity-light, 0.1));
+  border-radius: var(--node--border-radius);
+  box-shadow: var(--node--shadow);
+  transition:
+    box-shadow var(--duration--snappy) var(--easing--ease-out),
+    border-color var(--duration--snappy) var(--easing--ease-out),
+    background var(--duration--snappy) var(--easing--ease-out),
+    transform var(--duration--snappy) var(--easing--ease-out);
+}
+
+[data-theme='dark'] .bpmn-node {
+  border-color: oklch(100% 0 0 / var(--canvas-node--border--opacity-dark, 0.15));
+}
+
+/* hover 微上浮效果 */
+.bpmn-node:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.bpmn-node--selected {
+  box-shadow: var(--node--shadow--selected);
+  border-color: var(--color--blue-400);
+}
+
+/* ---- Start Event ---- */
+.bpmn-node--start {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border-width: 3px;
+  border-color: var(--bpmn--start--color);
+  background: var(--bpmn--start--bg);
+  padding: 0;
+}
+.bpmn-node--start.bpmn-node--selected {
+  border-color: var(--color--blue-400);
+  background: var(--color--blue-50);
+}
+.bpmn-node--start .bpmn-node__inner-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bpmn--start--color);
+}
+.bpmn-node--start.bpmn-node--selected .bpmn-node__inner-dot {
+  background: var(--color--blue-500);
+}
+
+/* ---- End Event ---- */
+.bpmn-node--end {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border-width: 4px;
+  border-color: var(--bpmn--end--color);
+  background: var(--bpmn--end--bg);
+  padding: 0;
+}
+.bpmn-node--end.bpmn-node--selected {
+  border-color: var(--color--blue-400);
+  background: var(--color--blue-50);
+}
+.bpmn-node--end .bpmn-node__inner-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bpmn--end--color);
+}
+.bpmn-node--end.bpmn-node--selected .bpmn-node__inner-dot {
+  background: var(--color--blue-500);
+}
+
+/* ---- Task Nodes (shared) ---- */
+.bpmn-node--task {
+  width: 160px;
+  height: 60px;
+  padding: 4px 12px;
+  font-size: var(--font-size--sm);
+  font-weight: var(--font-weight--medium);
+  color: var(--text-color);
+  text-align: center;
+  line-height: var(--line-height--md);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bpmn-node--task .bpmn-node__icon {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 700;
+  opacity: 0.4;
+}
+.bpmn-node--task.bpmn-node--selected .bpmn-node__icon {
+  opacity: 0.7;
+  color: var(--color--blue-500);
+}
+
+/* ---- Gateway Nodes (shared) ---- */
+.bpmn-node--gateway {
+  position: relative;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
+  transition: filter var(--duration--snappy) var(--easing--ease-out);
+}
+.bpmn-node--gateway.bpmn-node--selected {
+  filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.3));
+}
+
+/* ---- Handle（理念 3：出现的仪式感） ---- */
+.bpmn-handle {
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform-origin: center;
+  background: var(--bpmn--handle--color) !important;
+  width: calc(16px * var(--canvas-zoom-compensation-factor, 1)) !important;
+  height: calc(16px * var(--canvas-zoom-compensation-factor, 1)) !important;
+  border: 2px solid var(--background--surface) !important;
+  border-radius: 50% !important;
+}
+.react-flow__node:hover .bpmn-handle {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ---- Edge（oklch 缩放自适应颜色） ---- */
+.bpmn-edge--path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: oklch(var(--canvas-edge--color--lightness--light, 0.84) 0 0);
+  transition: stroke-width var(--duration--snappy) var(--easing--ease-out), stroke 0.3s ease;
+}
+.react-flow__edge:hover .bpmn-edge--path {
+  stroke-width: 2.5;
+}
+[data-theme='dark'] .bpmn-edge--path {
+  stroke: oklch(var(--canvas-edge--color--lightness--dark, 0.42) 0 0);
+}
+
+.bpmn-edge--label {
+  font-size: var(--font-size--2xs);
+  background: var(--background--surface);
+  padding: 1px 6px;
+  border-radius: var(--radius--3xs);
+  border: 1px solid var(--border-color);
+  color: var(--text-color--subtler);
+  pointer-events: all;
+  white-space: nowrap;
+}
+
+/* ---- Running / Waiting Animation (conic-gradient border) ---- */
+@keyframes bpmn-border-rotate {
+  from { --node--gradient-angle: 0deg; }
+  to { --node--gradient-angle: 360deg; }
+}
+
+.bpmn-node--running::after,
+.bpmn-node--waiting::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: calc(var(--node--border-radius) + 3px);
+  z-index: -1;
+  background: conic-gradient(
+    from var(--node--gradient-angle),
+    rgba(255, 109, 90, 1),
+    rgba(255, 109, 90, 1) 20%,
+    rgba(255, 109, 90, 0.2) 35%,
+    rgba(255, 109, 90, 0.2) 65%,
+    rgba(255, 109, 90, 1) 90%,
+    rgba(255, 109, 90, 1)
+  );
+}
+.bpmn-node--running::after {
+  animation: bpmn-border-rotate 1.5s linear infinite;
+}
+.bpmn-node--waiting::after {
+  animation: bpmn-border-rotate 4.5s linear infinite;
+}
+
+/* ---- Minimap ---- */
+.react-flow__minimap {
+  transition: opacity var(--duration--slow) var(--easing--ease-out);
+  border-radius: var(--radius--xs) !important;
+  border: 1px solid var(--border-color) !important;
+  background: var(--background--surface) !important;
+}
+
+/* ---- Controls ---- */
+.react-flow__controls {
+  border-radius: var(--radius--xs) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow--sm) !important;
+  overflow: hidden;
+}
+.react-flow__controls-button {
+  background: var(--background--surface) !important;
+  border-bottom: 1px solid var(--border-color--subtle) !important;
+  color: var(--text-color--subtler) !important;
+}
+.react-flow__controls-button:hover {
+  background: var(--background--hover) !important;
+}
+
+/* ---- Background ---- */
+.react-flow__background {
+  background-color: var(--canvas--color--background) !important;
+}
