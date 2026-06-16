@@ -1,5 +1,5 @@
 import { useBpmnStore } from '@/store/bpmnStore';
-import { exportToBpmnXml } from '@/utils/bpmnExporter';
+import { exportToBpmnXml, type BpmnExportVersion } from '@/utils/bpmnExporter';
 import { useState, useEffect } from 'react';
 
 export function Toolbar() {
@@ -10,13 +10,16 @@ export function Toolbar() {
     return document.body.getAttribute('data-theme') === 'dark';
   });
 
+  // 导出版本
+  const [exportVersion, setExportVersion] = useState<BpmnExportVersion>('activiti');
+
   useEffect(() => {
     document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
     localStorage.setItem('bpmn-theme', isDark ? 'dark' : 'light');
   }, [isDark]);
 
   const handleExport = () => {
-    const xml = exportToBpmnXml(nodes, edges, processName);
+    const xml = exportToBpmnXml(nodes, edges, processName, exportVersion);
     const blob = new Blob([xml], { type: 'application/xml' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -100,6 +103,25 @@ export function Toolbar() {
       <div style={{ fontSize: 11, color: 'var(--text-color--subtler)', marginRight: 8 }}>
         {nodes.length} nodes · {edges.length} edges
       </div>
+
+      {/* 导出版本选择器 */}
+      <select
+        value={exportVersion}
+        onChange={e => setExportVersion(e.target.value as BpmnExportVersion)}
+        style={{
+          padding: '5px 8px',
+          fontSize: 11,
+          border: '1px solid var(--border-color)',
+          borderRadius: 'var(--radius--3xs)',
+          background: 'var(--background--surface)',
+          color: 'var(--text-color)',
+          cursor: 'pointer',
+          outline: 'none',
+        }}
+      >
+        <option value="activiti">Activiti 格式</option>
+        <option value="bpmn-io">bpmn.io 格式</option>
+      </select>
 
       <button
         onClick={handleExport}
