@@ -46,18 +46,23 @@ export function useZoomAdjustedValues() {
     // 缩放补偿因子（保持视觉大小一致）
     const compensationFactor = (1 / Math.max(zoom, 0.3)).toFixed(3);
 
-    // 注入 CSS 变量到 React Flow 容器
+    // 注入 CSS 变量到 document.documentElement（html 根元素）
+    // 这样 React Flow 的 portal 渲染的 Handle 也能读到这些变量
+    const root = document.documentElement;
+    root.style.setProperty('--canvas-node--border--opacity-light', borderOpacityLight);
+    root.style.setProperty('--canvas-node--border--opacity-dark', borderOpacityDark);
+    root.style.setProperty('--canvas-edge--color--lightness--light', edgeLightnessLight);
+    root.style.setProperty('--canvas-edge--color--lightness--dark', edgeLightnessDark);
+    root.style.setProperty('--canvas-handle--lightness--light', handleLightnessLight);
+    root.style.setProperty('--canvas-handle--lightness--dark', handleLightnessDark);
+    root.style.setProperty('--canvas-zoom-compensation-factor', compensationFactor);
+    root.style.setProperty('--canvas-zoom', zoom.toFixed(3));
+
+    // 同时注入到容器（用于辅助线等）
     const container = containerRef.current;
     if (container) {
-      const style = container.style;
-      style.setProperty('--canvas-node--border--opacity-light', borderOpacityLight);
-      style.setProperty('--canvas-node--border--opacity-dark', borderOpacityDark);
-      style.setProperty('--canvas-edge--color--lightness--light', edgeLightnessLight);
-      style.setProperty('--canvas-edge--color--lightness--dark', edgeLightnessDark);
-      style.setProperty('--canvas-handle--lightness--light', handleLightnessLight);
-      style.setProperty('--canvas-handle--lightness--dark', handleLightnessDark);
-      style.setProperty('--canvas-zoom-compensation-factor', compensationFactor);
-      style.setProperty('--canvas-zoom', zoom.toFixed(3));
+      container.style.setProperty('--canvas-zoom-compensation-factor', compensationFactor);
+      container.style.setProperty('--canvas-zoom', zoom.toFixed(3));
     }
   }, [getViewport]);
 

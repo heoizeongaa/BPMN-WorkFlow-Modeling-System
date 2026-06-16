@@ -3,16 +3,16 @@ import type { Node, Edge } from '@xyflow/react';
 import type { BpmnNodeData, BpmnEdgeData } from '@/types/bpmn';
 
 const NODE_DIMENSIONS: Record<string, { width: number; height: number }> = {
-  startEvent: { width: 40, height: 40 },
-  endEvent: { width: 40, height: 40 },
+  startEvent: { width: 60, height: 60 },
+  endEvent: { width: 60, height: 60 },
   userTask: { width: 160, height: 60 },
   serviceTask: { width: 160, height: 60 },
   scriptTask: { width: 160, height: 60 },
   sendTask: { width: 160, height: 60 },
   receiveTask: { width: 160, height: 60 },
-  exclusiveGateway: { width: 50, height: 50 },
-  parallelGateway: { width: 50, height: 50 },
-  inclusiveGateway: { width: 50, height: 50 },
+  exclusiveGateway: { width: 60, height: 60 },
+  parallelGateway: { width: 60, height: 60 },
+  inclusiveGateway: { width: 60, height: 60 },
   subProcess: { width: 200, height: 120 },
 };
 
@@ -46,6 +46,7 @@ export async function layoutWithElk(
       'elk.direction': 'RIGHT',
       'elk.layered.spacing.nodeNodeBetweenLayers': '80',
       'elk.spacing.nodeNode': '40',
+      'elk.layered.nodeAlignment': 'CENTER',
       'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
       'elk.layered.nodePlacement.strategy': 'BRANDES_KOEPF',
       'elk.layered.cycleBreaking.strategy': 'GREEDY',
@@ -63,16 +64,18 @@ export async function layoutWithElk(
     const elkNode = layoutedGraph.children?.find(n => n.id === node.id);
     if (!elkNode) return node;
 
+    const dims = NODE_DIMENSIONS[node.data.type] || NODE_DIMENSIONS.userTask;
+
     return {
       ...node,
       position: {
-        x: elkNode.x ?? 0,
-        y: elkNode.y ?? 0,
+        x: Math.round(elkNode.x ?? 0),
+        y: Math.round(elkNode.y ?? 0),
       },
       style: {
         ...node.style,
-        width: elkNode.width,
-        height: elkNode.height,
+        width: dims.width,
+        height: dims.height,
       },
     };
   });

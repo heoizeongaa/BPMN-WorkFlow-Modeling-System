@@ -12,9 +12,9 @@ const DIMENSIONS_BPMN_IO: Record<string, { width: number; height: number }> = {
   scriptTask: { width: 160, height: 60 },
   sendTask: { width: 160, height: 60 },
   receiveTask: { width: 160, height: 60 },
-  exclusiveGateway: { width: 50, height: 50 },
-  parallelGateway: { width: 50, height: 50 },
-  inclusiveGateway: { width: 50, height: 50 },
+  exclusiveGateway: { width: 60, height: 60 },
+  parallelGateway: { width: 60, height: 60 },
+  inclusiveGateway: { width: 60, height: 60 },
   subProcess: { width: 200, height: 120 },
 };
 

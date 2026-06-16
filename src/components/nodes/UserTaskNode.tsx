@@ -7,10 +7,10 @@ type BpmnNode = RfNode<BpmnNodeData>;
 export function UserTaskNode({ data, selected }: NodeProps<BpmnNode>) {
   return (
     <div className={`bpmn-node bpmn-node--task${selected ? ' bpmn-node--selected' : ''}`}>
-      <div className="bpmn-node__icon">□</div>
-      <span>{data.label}</span>
       <Handle type="target" position={Position.Left} className="bpmn-handle" />
       <Handle type="source" position={Position.Right} className="bpmn-handle" />
+      <div className="bpmn-node__icon">□</div>
+      <span>{data.label}</span>
     </div>
   );
 }

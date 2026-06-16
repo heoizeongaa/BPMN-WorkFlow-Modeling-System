@@ -4,15 +4,14 @@ import type { BpmnNodeData } from '@/types/bpmn';
 
 type BpmnNode = RfNode<BpmnNodeData>;
 
-export function StartEventNode({ data, selected }: NodeProps<BpmnNode>) {
+export function StartEventNode({ data: _data, selected }: NodeProps<BpmnNode>) {
   return (
-    <div className={`bpmn-node bpmn-node--start${selected ? ' bpmn-node--selected' : ''}`}>
+    <div
+      className={`bpmn-node bpmn-node--start${selected ? ' bpmn-node--selected' : ''}`}
+      style={{ width: 60, height: 60 }}
+    >
+      <Handle type="source" position={Position.Right} className="bpmn-handle" />
       <div className="bpmn-node__inner-dot" />
-      <Handle
-        type="source"
-        position={Position.Right}
-        className="bpmn-handle"
-      />
     </div>
   );
 }

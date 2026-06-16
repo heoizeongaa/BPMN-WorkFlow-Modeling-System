@@ -3,16 +3,16 @@ import type { Node, Edge } from '@xyflow/react';
 import type { BpmnNodeData, BpmnEdgeData, ParsedFlow } from '@/types/bpmn';
 
 const NODE_DIMENSIONS: Record<string, { width: number; height: number }> = {
-  startEvent: { width: 40, height: 40 },
-  endEvent: { width: 40, height: 40 },
+  startEvent: { width: 60, height: 60 },
+  endEvent: { width: 60, height: 60 },
   userTask: { width: 160, height: 60 },
   serviceTask: { width: 160, height: 60 },
   scriptTask: { width: 160, height: 60 },
   sendTask: { width: 160, height: 60 },
   receiveTask: { width: 160, height: 60 },
-  exclusiveGateway: { width: 50, height: 50 },
-  parallelGateway: { width: 50, height: 50 },
-  inclusiveGateway: { width: 50, height: 50 },
+  exclusiveGateway: { width: 60, height: 60 },
+  parallelGateway: { width: 60, height: 60 },
+  inclusiveGateway: { width: 60, height: 60 },
   subProcess: { width: 200, height: 120 },
 };
 

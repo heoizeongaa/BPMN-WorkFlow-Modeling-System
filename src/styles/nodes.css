@@ -37,50 +37,48 @@
 
 /* ---- Start Event ---- */
 .bpmn-node--start {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+.bpmn-node--start .bpmn-node__inner-dot {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border-width: 3px;
-  border-color: var(--bpmn--start--color);
+  border: 3px solid var(--bpmn--start--color);
   background: var(--bpmn--start--bg);
-  padding: 0;
-}
-.bpmn-node--start.bpmn-node--selected {
-  border-color: var(--color--blue-400);
-  background: var(--color--blue-50);
-}
-.bpmn-node--start .bpmn-node__inner-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--bpmn--start--color);
+  transition: border-color var(--duration--snappy), background var(--duration--snappy);
 }
 .bpmn-node--start.bpmn-node--selected .bpmn-node__inner-dot {
-  background: var(--color--blue-500);
+  border-color: var(--color--blue-400);
+  background: var(--color--blue-50);
 }
 
 /* ---- End Event ---- */
 .bpmn-node--end {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+.bpmn-node--end .bpmn-node__inner-dot {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border-width: 4px;
-  border-color: var(--bpmn--end--color);
+  border: 4px solid var(--bpmn--end--color);
   background: var(--bpmn--end--bg);
-  padding: 0;
-}
-.bpmn-node--end.bpmn-node--selected {
-  border-color: var(--color--blue-400);
-  background: var(--color--blue-50);
-}
-.bpmn-node--end .bpmn-node__inner-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--bpmn--end--color);
+  transition: border-color var(--duration--snappy), background var(--duration--snappy);
 }
 .bpmn-node--end.bpmn-node--selected .bpmn-node__inner-dot {
-  background: var(--color--blue-500);
+  border-color: var(--color--blue-400);
+  background: var(--color--blue-50);
 }
 
 /* ---- Task Nodes (shared) ---- */
@@ -122,21 +120,17 @@
   filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.3));
 }
 
-/* ---- Handle（理念 3：出现的仪式感） ---- */
+/* ---- Handle（始终可见，显示连接点） ---- */
 .bpmn-handle {
-  opacity: 0;
-  transform: scale(0);
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  transform-origin: center;
-  background: var(--bpmn--handle--color) !important;
-  width: calc(16px * var(--canvas-zoom-compensation-factor, 1)) !important;
-  height: calc(16px * var(--canvas-zoom-compensation-factor, 1)) !important;
+  background: var(--color--green-500) !important;
   border: 2px solid var(--background--surface) !important;
   border-radius: 50% !important;
+  opacity: 1;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .react-flow__node:hover .bpmn-handle {
-  opacity: 1;
-  transform: scale(1);
+  box-shadow: 0 0 0 3px var(--color--green-200);
+  transform: scale(1.2);
 }
 
 /* ---- Edge（oklch 缩放自适应颜色） ---- */

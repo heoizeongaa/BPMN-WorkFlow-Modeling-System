@@ -3,7 +3,7 @@ import { exportToBpmnXml, type BpmnExportVersion } from '@/utils/bpmnExporter';
 import { useState, useEffect } from 'react';
 
 export function Toolbar() {
-  const { nodes, edges, processName, relayout, isLayouting, addNode } = useBpmnStore();
+  const { nodes, edges, processName, relayout, isLayouting, addNode, connectSource, setConnectSource } = useBpmnStore();
 
   // 暗色模式状态
   const [isDark, setIsDark] = useState(() => {
@@ -37,11 +37,6 @@ export function Toolbar() {
   const handleAddGateway = () => {
     const maxX = nodes.reduce((max, n) => Math.max(max, n.position.x + 200), 100);
     addNode('exclusiveGateway', '', { x: maxX, y: 100 });
-  };
-
-  const handleAddParallelGateway = () => {
-    const maxX = nodes.reduce((max, n) => Math.max(max, n.position.x + 200), 100);
-    addNode('parallelGateway', '', { x: maxX, y: 100 });
   };
 
   return (
@@ -86,16 +81,22 @@ export function Toolbar() {
         UserTask
       </ToolbarButton>
       <ToolbarButton onClick={handleAddGateway} icon="◇">
-        X-Gateway
-      </ToolbarButton>
-      <ToolbarButton onClick={handleAddParallelGateway} icon="◇">
-        +-Gateway
+        Gateway
       </ToolbarButton>
 
       <ToolbarDivider />
 
       <ToolbarButton onClick={relayout} disabled={isLayouting} icon="📐">
         {isLayouting ? 'Layouting...' : 'Re-layout'}
+      </ToolbarButton>
+
+      <ToolbarDivider />
+
+      <ToolbarButton
+        onClick={() => setConnectSource(connectSource ? null : '__WAITING__')}
+        icon="🔗"
+      >
+        {connectSource ? '取消连线' : '连线'}
       </ToolbarButton>
 
       <div style={{ flex: 1 }} />

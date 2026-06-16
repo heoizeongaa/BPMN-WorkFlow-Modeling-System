@@ -6,13 +6,12 @@ type BpmnNode = RfNode<BpmnNodeData>;
 
 export function EndEventNode({ data: _data, selected }: NodeProps<BpmnNode>) {
   return (
-    <div className={`bpmn-node bpmn-node--end${selected ? ' bpmn-node--selected' : ''}`}>
+    <div
+      className={`bpmn-node bpmn-node--end${selected ? ' bpmn-node--selected' : ''}`}
+      style={{ width: 60, height: 60 }}
+    >
+      <Handle type="target" position={Position.Left} className="bpmn-handle" />
       <div className="bpmn-node__inner-dot" />
-      <Handle
-        type="target"
-        position={Position.Left}
-        className="bpmn-handle"
-      />
     </div>
   );
 }

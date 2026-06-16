@@ -209,6 +209,7 @@
   --bpmn--parallel--color: var(--color--blue-600);
   --bpmn--parallel--bg: var(--color--blue-50);
   --bpmn--inclusive--color: var(--color--green-500);
+  --bpmn--inclusive--bg: var(--color--green-50);
   --bpmn--subprocess--color: var(--color--purple-400);
   --bpmn--edge--color: var(--color--neutral-500);
   --bpmn--edge--selected: var(--color--blue-500);

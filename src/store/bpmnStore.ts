@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
+import { applyNodeChanges, applyEdgeChanges, reconnectEdge } from '@xyflow/react';
 import type { NodeChange, EdgeChange, Node, Edge, Connection } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 import type { BpmnNodeData, BpmnEdgeData, ConditionItem } from '@/types/bpmn';
@@ -26,17 +26,25 @@ interface BpmnStore {
   aiMessages: AiMessage[];
   aiError: string | null;
 
+  // 连线模式
+  connectSource: string | null;
+  setConnectSource: (id: string | null) => void;
+
   setDslText: (text: string) => void;
   setProcessName: (name: string) => void;
   generateFromDsl: () => Promise<void>;
   onNodesChange: (changes: NodeChange<Node<BpmnNodeData>>[]) => void;
   onEdgesChange: (changes: EdgeChange<Edge<BpmnEdgeData>>[]) => void;
   onConnect: (connection: Connection) => void;
+  onReconnect: (oldEdge: Edge<BpmnEdgeData>, newConnection: Connection) => void;
+  connectNodes: (sourceId: string, targetId: string) => void;
   addNode: (type: string, label: string, position: { x: number; y: number }) => void;
   removeNode: (id: string) => void;
   addCondition: (name: string, expression: string) => void;
   removeCondition: (id: string) => void;
   assignConditionToEdge: (edgeId: string, conditionId: string) => void;
+  updateEdgeData: (edgeId: string, data: Partial<BpmnEdgeData>) => void;
+  removeEdge: (edgeId: string) => void;
   relayout: () => Promise<void>;
 
   // AI actions
@@ -46,16 +54,16 @@ interface BpmnStore {
 }
 
 const NODE_DIMENSIONS: Record<string, { width: number; height: number }> = {
-  startEvent: { width: 40, height: 40 },
-  endEvent: { width: 40, height: 40 },
+  startEvent: { width: 60, height: 60 },
+  endEvent: { width: 60, height: 60 },
   userTask: { width: 160, height: 60 },
   serviceTask: { width: 160, height: 60 },
   scriptTask: { width: 160, height: 60 },
   sendTask: { width: 160, height: 60 },
   receiveTask: { width: 160, height: 60 },
-  exclusiveGateway: { width: 50, height: 50 },
-  parallelGateway: { width: 50, height: 50 },
-  inclusiveGateway: { width: 50, height: 50 },
+  exclusiveGateway: { width: 60, height: 60 },
+  parallelGateway: { width: 60, height: 60 },
+  inclusiveGateway: { width: 60, height: 60 },
   subProcess: { width: 200, height: 120 },
 };
 
@@ -72,6 +80,10 @@ export const useBpmnStore = create<BpmnStore>((set, get) => ({
   aiStatus: 'idle' as AiParseStatus,
   aiMessages: [],
   aiError: null,
+
+  // 连线模式
+  connectSource: null,
+  setConnectSource: (id) => set({ connectSource: id }),
 
   setDslText: (text) => set({ dslText: text }),
   setProcessName: (name) => set({ processName: name }),
@@ -111,6 +123,34 @@ export const useBpmnStore = create<BpmnStore>((set, get) => ({
       targetHandle: connection.targetHandle,
       type: 'bpmnEdge',
       data: {},
+    };
+    set({ edges: [...get().edges, newEdge] });
+  },
+
+  onReconnect: (oldEdge, newConnection) => {
+    // reconnectEdge 只更新 source/target/handle，保留原有 data 属性
+    set({ edges: reconnectEdge(oldEdge, newConnection, get().edges) });
+  },
+
+  connectNodes: (sourceId, targetId) => {
+    // 检查是否已存在
+    const exists = get().edges.some(e => e.source === sourceId && e.target === targetId);
+    if (exists) return;
+    if (sourceId === targetId) return;
+
+    // 判断是否反向（驳回线）
+    const sourceNode = get().nodes.find(n => n.id === sourceId);
+    const targetNode = get().nodes.find(n => n.id === targetId);
+    const isBackward = sourceNode && targetNode && sourceNode.position.x > targetNode.position.x;
+
+    const newEdge: Edge<BpmnEdgeData> = {
+      id: `edge_${uuidv4().replace(/-/g, '').substring(0, 8)}`,
+      source: sourceId,
+      target: targetId,
+      sourceHandle: isBackward ? 'bottom' : undefined,
+      targetHandle: isBackward ? 'bottom-target' : undefined,
+      type: 'bpmnEdge',
+      data: isBackward ? { isRejectFlow: true } : {},
     };
     set({ edges: [...get().edges, newEdge] });
   },
@@ -157,6 +197,20 @@ export const useBpmnStore = create<BpmnStore>((set, get) => ({
           : e
       ),
     });
+  },
+
+  updateEdgeData: (edgeId, data) => {
+    set({
+      edges: get().edges.map(e =>
+        e.id === edgeId
+          ? { ...e, data: { ...e.data, ...data } }
+          : e
+      ),
+    });
+  },
+
+  removeEdge: (edgeId) => {
+    set({ edges: get().edges.filter(e => e.id !== edgeId) });
   },
 
   relayout: async () => {
